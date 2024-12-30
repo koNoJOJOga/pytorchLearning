@@ -15,6 +15,8 @@ img, target = test_data[0]
 
 writer = SummaryWriter("dataloader")
 
+# 启动tensorboard: tensorboard --logdir=dataloader
+
 for epoch in range(2):
     step = 0
     for data in test_loader:
