@@ -34,19 +34,19 @@ ww = Ww().to(device)
 loss_fn = nn.CrossEntropyLoss().to(device)
 
 # 定义优化器为 AdamW
-learning_rate = 0.01
+learning_rate = 0.001
 optimizer = torch.optim.AdamW(ww.parameters(), lr=learning_rate, weight_decay=0.01)
 
 # 设置训练网络的一些参数
 total_train_step = 0
 total_test_step = 0
-epoch = 10
+epoch = 30
 
 # 添加 TensorBoard
 writer = SummaryWriter("logs_train")
 
 # Early Stopping 参数
-early_stop_patience = 3  # 验证集性能连续多少轮没有提升时停止
+early_stop_patience = 6  # 验证集性能连续多少轮没有提升时停止
 no_improvement_count = 0  # 用于计数验证集性能没有提升的轮次
 
 best_accuracy = 0.0
