@@ -6,6 +6,8 @@ import torch
 from model import *
 from torch.utils.tensorboard import SummaryWriter
 
+# 想要使用gpu，需要将模型和输入数据（如 imgs 和 targets）移动到 mps。
+
 train_data = torchvision.datasets.CIFAR10(root="dataset", train=True, 
                                         transform=torchvision.transforms.ToTensor(), download=True)
 
@@ -22,11 +24,15 @@ print("测试数据集的长度为：{}".format(test_data_size))
 train_dataloader = DataLoader(train_data, batch_size=64)
 test_dataloader = DataLoader(test_data, batch_size=64)
 
+# 检查设备
+device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
+print(f"Using device: {device}")
+
 # 创建网络模型
-ww = Ww()
+ww = Ww().to(device)
 
 # 损失函数
-loss_fn = nn.CrossEntropyLoss()
+loss_fn = nn.CrossEntropyLoss().to(device)
 
 # 定义优化器
 learning_rate = 0.01
@@ -50,6 +56,8 @@ for i in range(epoch):
     ww.train()   # 有dropout、BN等层时需要加上
     for data in train_dataloader:
         imgs, targets = data
+        imgs, targets = imgs.to(device), targets.to(device)  # 数据移动到设备
+
         outputs = ww(imgs)
         loss = loss_fn(outputs, targets)
 
@@ -70,6 +78,8 @@ for i in range(epoch):
     with torch.no_grad():   # 排除梯度的影响
         for data in test_dataloader:
             imgs, targets = data
+            imgs, targets = imgs.to(device), targets.to(device)  # 数据移动到设备
+
             outputs = ww(imgs)
             loss = loss_fn(outputs, targets)
             total_test_loss = total_test_loss + loss.item()
